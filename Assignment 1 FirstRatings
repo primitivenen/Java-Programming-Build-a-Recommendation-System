@@ -1,0 +1,122 @@
+
+/**
+ * Write a description of FirstRatings here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+import edu.duke.*;
+import java.util.*;
+import org.apache.commons.csv.*;
+
+public class FirstRatings {
+
+    public ArrayList<Movie> loadMovies(String filename){
+        ArrayList<Movie> ans = new ArrayList<Movie>();
+        FileResource fr = new FileResource("C:\\Users\\WillAdeAge\\Downloads\\StepOneStarterProgram\\data\\"+filename+".csv");
+        CSVParser parser = fr.getCSVParser();
+        System.out.println("This method returns all movie data");
+        for(CSVRecord record:parser){
+            ans.add(new Movie(record.get("id"), record.get("title"),record.get("year"),record.get("genre"),record.get("director"),
+    record.get("country"),record.get("poster"),Integer.parseInt(record.get("minutes"))));
+        }   
+        return ans;
+    } 
+    public void testLoadMovies(){
+        ArrayList<Movie> temp = loadMovies("ratedmoviesfull");
+        System.out.println("There are "+temp.size()+" movies in total");
+        int numofComedy=0;
+        int numof150Min=0;
+        HashMap<String, Integer> map = new HashMap<>();
+        ArrayList<String> ansDirector = new ArrayList<>();
+        for(int i=0; i<temp.size(); i++){
+            //System.out.println(temp.get(i));
+            if(temp.get(i).getGenres().contains("Comedy")){
+                numofComedy++;
+            }    
+            if(temp.get(i).getMinutes()>150){
+                numof150Min++;
+            } 
+            String[] str = temp.get(i).getDirector().split(",");
+            for(int j=0; j<str.length; j++){
+                map.put(str[j],map.getOrDefault(str[j],0)+1);
+            }           
+        }
+        int max=0;
+        for(String director:map.keySet()){
+            if(map.get(director)>max){
+                max=map.get(director);
+            }
+        }
+        for(String director:map.keySet()){
+            if(map.get(director)==max){
+                ansDirector.add(director);
+            }
+        }
+        System.out.println("There are "+ numofComedy + "comedy movies");
+        System.out.println("There are "+ numof150Min + " movies greater than 150 min");
+        System.out.println("The maximum number of films directed by one director is "+max+",they are: ");
+        for(int k=0; k<ansDirector.size(); k++){
+            System.out.println(ansDirector.get(k));
+        }
+    }
+   
+    public ArrayList<Rater> loadRaters(String filename){
+        ArrayList<Rater> ans = new ArrayList<Rater>();
+        FileResource fr = new FileResource("C:\\Users\\WillAdeAge\\Downloads\\StepOneStarterProgram\\data\\"+filename+".csv");
+        CSVParser parser = fr.getCSVParser();
+        System.out.println("This method returns all rater data");
+        for(CSVRecord record:parser){
+            boolean has=false;
+            for(Rater r:ans){
+                if(r.getID().equals(record.get("rater_id"))){
+                    r.addRating(record.get("movie_id"),Double.parseDouble(record.get("rating")));
+                    ans.set(ans.indexOf(r),r); 
+                    has=true;
+                }
+            }
+            if(!has){
+                Rater temp = new Rater(record.get("rater_id"));
+                temp.addRating(record.get("movie_id"),Double.parseDouble(record.get("rating")));
+                ans.add(temp); 
+            }
+        }   
+        return ans;        
+    }   
+    public void testLoadRaters(){
+        ArrayList<Rater> temp = loadRaters("ratings");  
+        System.out.println("There are "+temp.size()+" raters in total");
+        /*
+        for(int i=0; i<temp.size(); i++){
+            System.out.println(temp.get(i).getID()+temp.get(i).numRatings());
+            for(int j=0; j<temp.get(i).numRatings(); j++){
+                String str = temp.get(i).getItemsRated().get(j);
+                System.out.println(str+" "+temp.get(i).getRating(str));
+            }           
+        } 
+        */
+        int max=0;
+        String maxid="";
+        int numOfRate=0;
+        HashSet<String> res = new HashSet<String>(); 
+        for(int i=0; i<temp.size(); i++){
+            if(temp.get(i).numRatings()>max){
+                max=temp.get(i).numRatings();
+                maxid=temp.get(i).getID();
+            }
+            if(temp.get(i).getID().equals("193"))
+                System.out.println("The number of rating for "+temp.get(i).getID()+" is "+temp.get(i).numRatings());
+                for(int j=0; j<temp.get(i).numRatings(); j++){
+                    String str = temp.get(i).getItemsRated().get(j);
+                    if(str.equals("1798709")){
+                        numOfRate++;
+                    }
+                    if(!res.contains(str))
+                        res.add(str);
+                }           
+        }      
+        System.out.println("The maximum number of ratings belong to "+maxid+" and the number is "+max);
+        System.out.println("The number of ratings for a particular movie is "+numOfRate);
+        System.out.println("There were "+res.size()+" movies rated.");
+    }
+}
