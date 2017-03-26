@@ -1,0 +1,72 @@
+
+/**
+ * Write a description of SecondRatings here.
+ * 
+ * @author (your name) 
+ * @version (a version number or a date)
+ */
+
+import java.util.*;
+
+public class SecondRatings {
+    private ArrayList<Movie> myMovies;
+    private ArrayList<Rater> myRaters;
+    
+    public SecondRatings() {
+        // default constructor
+        this("ratedmoviesfull.csv", "ratings.csv");
+    }
+    public SecondRatings(String moviefile, String ratingsfile){
+        FirstRatings fr = new FirstRatings();
+        myMovies=fr.loadMovies(moviefile);
+        myRaters=fr.loadRaters(ratingsfile);
+    }
+    public int getMovieSize(){
+        return myMovies.size();
+    }
+    public int getRaterSize(){
+        return myRaters.size();
+    }
+    private double getAverageByID(String id, int minimalRaters){
+        int sum=0, count=0;
+        for(int i=0; i<myRaters.size(); i++){
+            if(myRaters.get(i).hasRating(id)){
+                double value = myRaters.get(i).getRating(id);
+                if(value!=-1){
+                    count++;
+                    sum+=value;
+                }
+            }
+        }
+        if(count>=minimalRaters){
+            return (double)sum/count;
+        }
+        return -1;
+    }
+    public ArrayList<Rating> getAverageByID(int minimalRaters){
+        ArrayList<Rating> res = new ArrayList<Rating>();
+        for(int i=0; i<myMovies.size(); i++){
+            double temp = getAverageByID(myMovies.get(i).getID(), minimalRaters);
+            if(temp!=-1){
+                Rating rt = new Rating(myMovies.get(i).getID(), temp);
+                res.add(rt);
+            }
+        }
+        return res;
+    }
+
+    public String getTitle(String id){
+        for(int i=0; i<myMovies.size(); i++){
+            if(myMovies.get(i).getID().equals(id))
+                return myMovies.get(i).getTitle();
+        }
+        return "N/A";
+    }
+    public String getID(String title){
+        for(int i=0; i<myMovies.size(); i++){
+            if(myMovies.get(i).getTitle().equals(title))
+                return myMovies.get(i).getID();
+        }
+        return "No such title";
+    }
+}
