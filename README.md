@@ -1,1 +1,2 @@
 # Java-Programming-Build-a-Recommendation-System
+[![Run on Repl.it](https://repl.it/badge/github/primitivenen/Java-Programming-Build-a-Recommendation-System)](https://repl.it/github/primitivenen/Java-Programming-Build-a-Recommendation-System)
